@@ -7,8 +7,8 @@ const Payment = require('../models/Payment');
 const AudioRequest = require('../models/AudioRequest');
 
 // Initialize Stripe with the API key from environment variables
-// Use a valid test key that works with the Stripe API
-const STRIPE_SECRET_KEY = '';
+// Use a placeholder key when not in production to prevent crashes
+const STRIPE_SECRET_KEY = 'sk_test_placeholder_key_for_development_only';
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || STRIPE_SECRET_KEY);
 
 // PayPal setup

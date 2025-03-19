@@ -1,0 +1,48 @@
+services:
+  # MongoDB service
+  mongodb:
+    image: mongo:6
+    container_name: fanswoon-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - fanswoon-network
+
+  # FanSwoon application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fanswoon-app
+    restart: always
+    ports:
+      - "${PORT:-5001}:5001"
+    depends_on:
+      - mongodb
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=${PORT:-5001}
+      - MONGODB_URI=${MONGODB_URI:-mongodb://mongodb:27017/fanswoon}
+      - JWT_SECRET=${JWT_SECRET:-your_jwt_secret}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-placeholder_google_client_id}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-sk_test_placeholder_key_for_development_only}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-whsec_placeholder_webhook_secret}
+      - PAYPAL_CLIENT_ID=${PAYPAL_CLIENT_ID:-placeholder_paypal_client_id}
+      - PAYPAL_CLIENT_SECRET=${PAYPAL_CLIENT_SECRET:-placeholder_paypal_client_secret}
+    volumes:
+      - uploads_data:/app/uploads
+    networks:
+      - fanswoon-network
+
+networks:
+  fanswoon-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+  uploads_data:

@@ -113,8 +113,41 @@ const Login = () => {
         return;
       }
       
+      console.log('Sending login request with data:', { email, password });
+      
+      // Try using fetch directly instead of the api utility
+      try {
+        const fetchResponse = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password })
+        });
+        
+        const fetchData = await fetchResponse.json();
+        console.log('Login fetch response:', fetchResponse.status, fetchData);
+        
+        if (fetchResponse.ok) {
+          // Store the token in localStorage
+          localStorage.setItem('token', fetchData.token);
+          localStorage.setItem('userId', fetchData.userId);
+          
+          console.log('Login successful via fetch');
+          
+          // Redirect to home page
+          navigate('/');
+          return;
+        }
+      } catch (fetchErr) {
+        console.error('Login fetch error:', fetchErr);
+      }
+      
+      // Fall back to using the api utility if fetch fails
+      console.log('Trying login with api utility...');
       const response = await api.post('/api/auth/login', { email, password });
       console.log('Login response status:', response.status);
+      console.log('Login response data:', response.data);
 
       // Store the token in localStorage
       localStorage.setItem('token', response.data.token);
